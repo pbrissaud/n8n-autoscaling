@@ -164,9 +164,11 @@ services:
       - "traefik.http.routers.n8n-ui.rule=Host(`${N8N_HOST}`)"
       - "traefik.http.routers.n8n-ui.entrypoints=websecure"
       - "traefik.http.routers.n8n-ui.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.n8n-ui.service=n8n"
       - "traefik.http.routers.n8n-webhooks.rule=Host(`${N8N_WEBHOOK}`)"
       - "traefik.http.routers.n8n-webhooks.entrypoints=websecure"
       - "traefik.http.routers.n8n-webhooks.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.n8n-webhooks.service=n8n"
       - "traefik.http.services.n8n.loadbalancer.server.port=5678"
 
   # Task runner for main n8n instance (n8n 2.0 requirement)
