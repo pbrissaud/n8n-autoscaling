@@ -83,6 +83,8 @@ services:
       - DOCKER_API_VERSION=1.44
     command:
       - "--api=true"
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
