@@ -3,6 +3,7 @@ volumes:
   redis_data:
   n8n_main:
   n8n_webhook:
+  traefik_data:
 
 networks:
   n8n-network:
@@ -72,14 +73,30 @@ x-task-runner: &service-task-runner
     - N8N_RUNNERS_INSECURE_MODE=true
 
 services:
-  cloudflared:
-    image: cloudflare/cloudflared:latest
+  traefik:
+    image: traefik:latest
     restart: unless-stopped
     networks:
       - n8n-network
-    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+      - shark
     environment:
-      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+      - DOCKER_API_VERSION=1.44
+    command:
+      - "--api=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@kubeasy.dev"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - traefik_data:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
   redis:
     image: redis:7-alpine
